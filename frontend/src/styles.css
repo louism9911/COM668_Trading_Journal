@@ -1,0 +1,7 @@
+/* Import Bootstrap 5 */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Global styles for Trade Hub */
+body {
+  background-color: #f8f9fa;
+}

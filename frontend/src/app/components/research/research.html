@@ -1,0 +1,179 @@
+<div class="container-fluid px-4" style="margin-top: 80px">
+
+  <h2 class="mb-4">Research Hub</h2>
+
+  <!-- ═══ Live Chart Section ═══ -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body p-3">
+
+      <!-- TradingView widget mount point -->
+      <div #tvContainer class="tv-container"></div>
+
+    </div>
+  </div>
+
+  <!-- ═══ News Section ═══ -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+      <h5 class="card-title mb-3">Financial News</h5>
+
+      <!-- Search bar -->
+      <div class="input-group mb-2">
+        <input type="text"
+               class="form-control"
+               placeholder="Search news — e.g. XAUUSD, EUR/USD, Fed rates…"
+               [(ngModel)]="newsQuery"
+               (keyup.enter)="fetchNews()">
+        <button class="btn btn-primary"
+                (click)="fetchNews()"
+                [disabled]="isLoadingNews">
+          @if (isLoadingNews) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          }
+          Search
+        </button>
+      </div>
+
+      <!-- Quick topic chips -->
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        @for (topic of quickTopics; track topic) {
+          <button class="btn btn-sm topic-chip"
+                  (click)="setQuickTopic(topic)">
+            {{ topic }}
+          </button>
+        }
+      </div>
+
+      <!-- Error state -->
+      @if (newsError) {
+        <div class="alert alert-danger">{{ newsError }}</div>
+      }
+
+      <!-- Results count -->
+      @if (!isLoadingNews && newsResults.length > 0) {
+        <p class="text-muted small mb-3 news-results-anchor">
+          Showing {{ (currentPage - 1) * articlesPerPage + 1 }}–{{ currentPage * articlesPerPage > newsResults.length ? newsResults.length : currentPage * articlesPerPage }} of {{ newsResults.length }} articles
+          @if (newsTotal > newsResults.length) {
+            ({{ newsTotal | number }} total results for "<strong>{{ newsQuery }}</strong>")
+          }
+        </p>
+      }
+
+      <!-- Loading skeleton -->
+      @if (isLoadingNews) {
+        <div class="row g-3">
+          @for (n of [1,2,3,4,5,6]; track n) {
+            <div class="col-md-6 col-lg-4">
+              <div class="news-card skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="p-3">
+                  <div class="skeleton-line w-40 mb-2"></div>
+                  <div class="skeleton-line w-100 mb-1"></div>
+                  <div class="skeleton-line w-80"></div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- News article cards -->
+      @if (!isLoadingNews && newsResults.length > 0) {
+        <div class="row g-3">
+          @for (article of pagedResults; track article.url) {
+            <div class="col-md-6 col-lg-4">
+              <a class="news-card text-decoration-none"
+                 [href]="article.url"
+                 target="_blank"
+                 rel="noopener noreferrer">
+
+                <!-- Thumbnail -->
+                @if (article.urlToImage) {
+                  <img [src]="article.urlToImage"
+                       [alt]="article.title"
+                       class="news-img"
+                       (error)="article.urlToImage = null">
+                } @else {
+                  <div class="news-img-placeholder">
+                    <span class="text-muted small">{{ article.source?.name || 'News' }}</span>
+                  </div>
+                }
+
+                <!-- Content -->
+                <div class="news-body">
+                  <div class="news-meta">
+                    <span class="news-source">{{ article.source?.name }}</span>
+                    <span class="news-date">{{ formatDate(article.publishedAt) }}</span>
+                  </div>
+                  <h6 class="news-title">{{ article.title }}</h6>
+                  @if (article.description) {
+                    <p class="news-desc">{{ article.description }}</p>
+                  }
+                </div>
+
+              </a>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Pagination -->
+      @if (!isLoadingNews && totalPages > 1) {
+        <nav class="mt-4 d-flex justify-content-center align-items-center gap-1">
+
+          <!-- Previous -->
+          <button class="btn btn-sm btn-outline-secondary"
+                  [disabled]="currentPage === 1"
+                  (click)="goToPage(currentPage - 1)">
+            &lsaquo;
+          </button>
+
+          <!-- First page + ellipsis -->
+          @if (pageNumbers[0] > 1) {
+            <button class="btn btn-sm btn-outline-secondary" (click)="goToPage(1)">1</button>
+            @if (pageNumbers[0] > 2) {
+              <span class="px-1 text-muted">…</span>
+            }
+          }
+
+          <!-- Page number buttons -->
+          @for (p of pageNumbers; track p) {
+            <button class="btn btn-sm"
+                    [class.btn-primary]="p === currentPage"
+                    [class.btn-outline-secondary]="p !== currentPage"
+                    (click)="goToPage(p)">
+              {{ p }}
+            </button>
+          }
+
+          <!-- Ellipsis + last page -->
+          @if (pageNumbers[pageNumbers.length - 1] < totalPages) {
+            @if (pageNumbers[pageNumbers.length - 1] < totalPages - 1) {
+              <span class="px-1 text-muted">…</span>
+            }
+            <button class="btn btn-sm btn-outline-secondary" (click)="goToPage(totalPages)">{{ totalPages }}</button>
+          }
+
+          <!-- Next -->
+          <button class="btn btn-sm btn-outline-secondary"
+                  [disabled]="currentPage === totalPages"
+                  (click)="goToPage(currentPage + 1)">
+            &rsaquo;
+          </button>
+
+          <span class="text-muted small ms-2">Page {{ currentPage }} of {{ totalPages }}</span>
+        </nav>
+      }
+
+      <!-- Empty state -->
+      @if (!isLoadingNews && newsResults.length === 0 && !newsError) {
+        <div class="text-center py-5 text-muted">
+          <p>No articles found. Try a different keyword.</p>
+        </div>
+      }
+
+    </div>
+  </div>
+
+</div>

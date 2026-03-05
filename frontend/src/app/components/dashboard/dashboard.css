@@ -1,0 +1,65 @@
+/* Dashboard specific styles */
+.card {
+  border-radius: 8px;
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+canvas {
+  max-height: 400px;
+}
+
+/* Behavioural & Strategy section */
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.insight-panel {
+  background: #f8f9fa;
+  border-left: 3px solid #0d6efd;
+  border-radius: 0 6px 6px 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+}
+
+.insight-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #0d6efd;
+  margin-bottom: 0.4rem;
+}
+
+.entry-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  font-size: 0.82rem;
+}
+
+.entry-pill-name {
+  font-weight: 600;
+}
+
+.entry-pill-stat {
+  color: #6c757d;
+}
+
+.emotion-chart-wrap {
+  position: relative;
+  height: 220px;
+}

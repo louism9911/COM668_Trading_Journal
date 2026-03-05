@@ -1,0 +1,4 @@
+/* Highlight table rows on hover */
+.table-hover tbody tr:hover {
+  background-color: #f0f4ff;
+}

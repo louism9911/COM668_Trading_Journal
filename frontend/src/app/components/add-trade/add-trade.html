@@ -1,0 +1,153 @@
+<div class="container" style="margin-top: 80px">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Add Trade</h2>
+    <a class="btn btn-outline-secondary" [routerLink]="['/journal']">
+      Back to Journal
+    </a>
+  </div>
+
+  <!-- Error message -->
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  <!-- Success message -->
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <form [formGroup]="tradeForm" (ngSubmit)="onSubmit()">
+
+        <!-- Row 1: Symbol, Type, Lots -->
+        <div class="row mb-3">
+          <div class="col-sm-4">
+            <label for="symbol" class="form-label">Symbol *</label>
+            <input type="text" id="symbol" class="form-control"
+                   formControlName="symbol"
+                   [ngClass]="{ 'error': isInvalid('symbol') }"
+                   placeholder="e.g. EURUSD">
+          </div>
+          <div class="col-sm-4">
+            <label for="type" class="form-label">Type *</label>
+            <select id="type" class="form-select" formControlName="type">
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <label for="lots" class="form-label">Lots *</label>
+            <input type="number" id="lots" class="form-control"
+                   formControlName="lots" step="0.01"
+                   [ngClass]="{ 'error': isInvalid('lots') }">
+          </div>
+        </div>
+
+        <!-- Row 2: Open Price, Close Price, Profit -->
+        <div class="row mb-3">
+          <div class="col-sm-4">
+            <label for="open_price" class="form-label">Open Price *</label>
+            <input type="number" id="open_price" class="form-control"
+                   formControlName="open_price" step="0.00001"
+                   [ngClass]="{ 'error': isInvalid('open_price') }">
+          </div>
+          <div class="col-sm-4">
+            <label for="close_price" class="form-label">Close Price *</label>
+            <input type="number" id="close_price" class="form-control"
+                   formControlName="close_price" step="0.00001"
+                   [ngClass]="{ 'error': isInvalid('close_price') }">
+          </div>
+          <div class="col-sm-4">
+            <label for="profit" class="form-label">Profit ($) *</label>
+            <input type="number" id="profit" class="form-control"
+                   formControlName="profit" step="0.01"
+                   [ngClass]="{ 'error': isInvalid('profit') }">
+          </div>
+        </div>
+
+        <!-- Row 3: Open Time, Close Time -->
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <label for="open_time" class="form-label">Open Time</label>
+            <input type="datetime-local" id="open_time" class="form-control"
+                   formControlName="open_time"
+                   [max]="maxDateTime"
+                   [ngClass]="{ 'error': isInvalid('open_time') }">
+            @if (isInvalid('open_time') && tradeForm.controls['open_time'].errors?.['futureDate']) {
+              <div class="text-danger small mt-1">Open time cannot be in the future.</div>
+            }
+          </div>
+          <div class="col-sm-6">
+            <label for="close_time" class="form-label">Close Time</label>
+            <input type="datetime-local" id="close_time" class="form-control"
+                   formControlName="close_time"
+                   [max]="maxDateTime"
+                   [ngClass]="{ 'error': isInvalid('close_time') }">
+            @if (isInvalid('close_time') && tradeForm.controls['close_time'].errors?.['futureDate']) {
+              <div class="text-danger small mt-1">Close time cannot be in the future.</div>
+            }
+          </div>
+        </div>
+
+        <!-- Date range error -->
+        @if (dateRangeError) {
+          <div class="alert alert-warning py-2">
+            Close time cannot be earlier than open time.
+          </div>
+        }
+
+        <!-- Row 4: Commission, Swap -->
+        <div class="row mb-3">
+          <div class="col-sm-4">
+            <label for="commission" class="form-label">Commission</label>
+            <input type="number" id="commission" class="form-control"
+                   formControlName="commission" step="0.01">
+          </div>
+          <div class="col-sm-4">
+            <label for="swap" class="form-label">Swap</label>
+            <input type="number" id="swap" class="form-control"
+                   formControlName="swap" step="0.01">
+          </div>
+          <div class="col-sm-4">
+            <label for="ticket" class="form-label">Ticket</label>
+            <input type="text" id="ticket" class="form-control"
+                   formControlName="ticket"
+                   placeholder="Optional ticket ID">
+          </div>
+        </div>
+
+        <!-- Row 5: SL, TP -->
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <label for="sl" class="form-label">Stop Loss</label>
+            <input type="number" id="sl" class="form-control"
+                   formControlName="sl" step="0.00001">
+          </div>
+          <div class="col-sm-6">
+            <label for="tp" class="form-label">Take Profit</label>
+            <input type="number" id="tp" class="form-control"
+                   formControlName="tp" step="0.00001">
+          </div>
+        </div>
+
+        <!-- Validation message -->
+        @if (isIncomplete()) {
+          <span class="text-danger">Please complete all required fields (*)</span>
+        }
+
+        <!-- Submit -->
+        @if (!isIncomplete()) {
+          <button class="btn btn-primary mt-3" type="submit">
+            Save Trade
+          </button>
+        }
+
+      </form>
+
+    </div>
+  </div>
+
+</div>

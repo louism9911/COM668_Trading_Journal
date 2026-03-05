@@ -1,0 +1,81 @@
+<div class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+  <div class="container-fluid">
+
+    <!-- Brand -->
+    <a class="navbar-brand" [routerLink]="['/']">Trade Hub</a>
+
+    <!-- Toggle button for mobile -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+
+        <!-- Links shown when logged in -->
+        @if (authService.isLoggedIn()) {
+          <li class="nav-item">
+            <a class="nav-link"
+               [routerLink]="['/']">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"
+               [routerLink]="['/dashboard']">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"
+               [routerLink]="['/journal']">Journal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"
+               [routerLink]="['/upload']">Upload</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"
+               [routerLink]="['/research']">Research</a>
+          </li>
+        }
+
+      </ul>
+
+      <!-- Right-side nav items -->
+      <ul class="navbar-nav">
+
+        <!-- Show username, account, admin and logout when logged in -->
+        @if (authService.isLoggedIn()) {
+          @if (authService.isAdmin()) {
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['/admin']">Admin</a>
+            </li>
+          }
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/account']">
+              {{ authService.getUsername() }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" style="cursor: pointer"
+               (click)="onLogout()">Logout</a>
+          </li>
+        }
+
+        <!-- Show login/register when not logged in -->
+        @if (!authService.isLoggedIn()) {
+          <li class="nav-item">
+            <a class="nav-link"
+               [routerLink]="['/login']">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"
+               [routerLink]="['/register']">Register</a>
+          </li>
+        }
+
+      </ul>
+    </div>
+
+  </div>
+</div>

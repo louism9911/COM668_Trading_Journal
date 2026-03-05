@@ -1,0 +1,366 @@
+<div class="container" style="margin-top: 80px">
+
+  <!-- Back button -->
+  <a class="btn btn-outline-secondary mb-3" [routerLink]="['/journal']">
+    &larr; Back to Journal
+  </a>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="text-center mt-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (errorMessage && !isLoading) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  <!-- Trade found -->
+  @if (trade && !isLoading) {
+
+    <!-- ═══════════════════════════════════════════════════
+         TRADE DETAIL VIEW (not editing)
+         ═══════════════════════════════════════════════════ -->
+    @if (!isEditing) {
+      <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">{{ trade.symbol }}
+            <span class="badge ms-2"
+              [ngClass]="trade.type === 'buy' ? 'bg-success' : 'bg-danger'">
+              {{ trade.type | uppercase }}
+            </span>
+          </h4>
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-2"
+                    (click)="startEditing()">Edit</button>
+            <button class="btn btn-sm btn-outline-danger"
+                    (click)="deleteTrade()">Delete</button>
+          </div>
+        </div>
+        <div class="card-body">
+
+          @if (editMessage) {
+            <div class="alert alert-success">{{ editMessage }}</div>
+          }
+
+          <div class="row">
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Lots</small>
+              <div>{{ trade.lots }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Open Price</small>
+              <div>{{ trade.open_price }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Close Price</small>
+              <div>{{ trade.close_price }}</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Profit</small>
+              <div [ngClass]="getProfitClass(trade.profit)">
+                <strong>${{ trade.profit | number:'1.2-2' }}</strong>
+              </div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Commission</small>
+              <div>{{ trade.commission }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Swap</small>
+              <div>{{ trade.swap }}</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Stop Loss</small>
+              <div>{{ trade.sl || '—' }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Take Profit</small>
+              <div>{{ trade.tp || '—' }}</div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <small class="text-muted">Ticket</small>
+              <div>{{ trade.ticket || '—' }}</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted">Open Time</small>
+              <div>{{ trade.open_time || '—' }}</div>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted">Close Time</small>
+              <div>{{ trade.close_time || '—' }}</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════
+         TRADE EDIT FORM
+         ═══════════════════════════════════════════════════ -->
+    @if (isEditing) {
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h4 class="mb-0">Edit Trade</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
+
+            <div class="row mb-3">
+              <div class="col-sm-4">
+                <label class="form-label">Symbol *</label>
+                <input type="text" class="form-control" formControlName="symbol">
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label">Type *</label>
+                <select class="form-select" formControlName="type">
+                  <option value="buy">Buy</option>
+                  <option value="sell">Sell</option>
+                </select>
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label">Lots *</label>
+                <input type="number" class="form-control"
+                       formControlName="lots" step="0.01">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-4">
+                <label class="form-label">Open Price *</label>
+                <input type="number" class="form-control"
+                       formControlName="open_price" step="0.00001">
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label">Close Price *</label>
+                <input type="number" class="form-control"
+                       formControlName="close_price" step="0.00001">
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label">Profit ($) *</label>
+                <input type="number" class="form-control"
+                       formControlName="profit" step="0.01">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-6">
+                <label class="form-label">Open Time</label>
+                <input type="text" class="form-control"
+                       formControlName="open_time" placeholder="e.g. 2025.01.15 09:30:00">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label">Close Time</label>
+                <input type="text" class="form-control"
+                       formControlName="close_time" placeholder="e.g. 2025.01.15 10:45:00">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-3">
+                <label class="form-label">Commission</label>
+                <input type="number" class="form-control"
+                       formControlName="commission" step="0.01">
+              </div>
+              <div class="col-sm-3">
+                <label class="form-label">Swap</label>
+                <input type="number" class="form-control"
+                       formControlName="swap" step="0.01">
+              </div>
+              <div class="col-sm-3">
+                <label class="form-label">Stop Loss</label>
+                <input type="number" class="form-control"
+                       formControlName="sl" step="0.00001">
+              </div>
+              <div class="col-sm-3">
+                <label class="form-label">Take Profit</label>
+                <input type="number" class="form-control"
+                       formControlName="tp" step="0.00001">
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <button class="btn btn-primary me-2" type="submit"
+                      [disabled]="isEditFormInvalid()">
+                Save Changes
+              </button>
+              <button class="btn btn-outline-secondary" type="button"
+                      (click)="cancelEditing()">
+                Cancel
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════
+         TAGS SECTION (subdocuments)
+         ═══════════════════════════════════════════════════ -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          Tags
+          @if (trade.tags && trade.tags.length > 0) {
+            <span class="badge bg-secondary ms-2">{{ trade.tags.length }}</span>
+          }
+        </h5>
+        <button class="btn btn-sm btn-outline-primary"
+                (click)="toggleTagForm()">
+          {{ showTagForm ? 'Cancel' : '+ Add Tag' }}
+        </button>
+      </div>
+      <div class="card-body">
+
+        @if (tagMessage) {
+          <div class="alert alert-info">{{ tagMessage }}</div>
+        }
+
+        <!-- Add Tag Form -->
+        @if (showTagForm) {
+          <div class="border rounded p-3 mb-3 bg-light">
+            <h6>New Tag</h6>
+            <form [formGroup]="tagForm" (ngSubmit)="addTag()">
+              <div class="row mb-2">
+                <div class="col-sm-6">
+                  <label class="form-label">Strategy *</label>
+                  <input type="text" class="form-control"
+                         formControlName="strategy"
+                         placeholder="e.g. Breakout, Reversal, Scalp">
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label">Entry Type</label>
+                  <input type="text" class="form-control"
+                         formControlName="entry_type"
+                         placeholder="e.g. Market, Limit, Stop">
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-sm-6">
+                  <label class="form-label">Emotional State</label>
+                  <select class="form-select" formControlName="emotional_state">
+                    <option value="">Select...</option>
+                    <option value="confident">Confident</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="anxious">Anxious</option>
+                    <option value="fearful">Fearful</option>
+                    <option value="greedy">Greedy</option>
+                    <option value="frustrated">Frustrated</option>
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label">Notes</label>
+                  <textarea class="form-control" formControlName="notes"
+                            rows="2" placeholder="Optional notes..."></textarea>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-primary" type="submit"
+                      [disabled]="tagForm.invalid">
+                Save Tag
+              </button>
+            </form>
+          </div>
+        }
+
+        <!-- Existing Tags List -->
+        @if (!trade.tags || trade.tags.length === 0) {
+          <p class="text-muted">
+            No tags on this trade. Add one to track your strategy and mindset.
+          </p>
+        }
+
+        @for (tag of trade.tags; track tag._id) {
+
+          <!-- Tag View Mode -->
+          @if (editingTagId !== tag._id) {
+            <div class="border rounded p-3 mb-2">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>{{ tag.strategy }}</strong>
+                  @if (tag.entry_type) {
+                    <span class="badge bg-info ms-2">{{ tag.entry_type }}</span>
+                  }
+                  @if (tag.emotional_state) {
+                    <span class="badge bg-secondary ms-2">{{ tag.emotional_state }}</span>
+                  }
+                </div>
+                <div>
+                  <button class="btn btn-sm btn-outline-primary me-1"
+                          (click)="startEditingTag(tag)">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger"
+                          (click)="deleteTag(tag._id)">Delete</button>
+                </div>
+              </div>
+              @if (tag.notes) {
+                <p class="text-muted mt-2 mb-0">{{ tag.notes }}</p>
+              }
+            </div>
+          }
+
+          <!-- Tag Edit Mode -->
+          @if (editingTagId === tag._id) {
+            <div class="border rounded p-3 mb-2 bg-light">
+              <h6>Edit Tag</h6>
+              <form [formGroup]="editTagForm" (ngSubmit)="saveTag(tag._id)">
+                <div class="row mb-2">
+                  <div class="col-sm-6">
+                    <label class="form-label">Strategy *</label>
+                    <input type="text" class="form-control"
+                           formControlName="strategy">
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label">Entry Type</label>
+                    <input type="text" class="form-control"
+                           formControlName="entry_type">
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-sm-6">
+                    <label class="form-label">Emotional State</label>
+                    <select class="form-select" formControlName="emotional_state">
+                      <option value="">Select...</option>
+                      <option value="confident">Confident</option>
+                      <option value="neutral">Neutral</option>
+                      <option value="anxious">Anxious</option>
+                      <option value="fearful">Fearful</option>
+                      <option value="greedy">Greedy</option>
+                      <option value="frustrated">Frustrated</option>
+                    </select>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" formControlName="notes"
+                              rows="2"></textarea>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-primary me-2" type="submit"
+                        [disabled]="editTagForm.invalid">Save</button>
+                <button class="btn btn-sm btn-outline-secondary" type="button"
+                        (click)="cancelEditingTag()">Cancel</button>
+              </form>
+            </div>
+          }
+
+        }
+
+      </div>
+    </div>
+
+  }
+
+</div>

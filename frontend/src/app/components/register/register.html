@@ -1,0 +1,90 @@
+<div class="container" style="margin-top: 100px">
+  <div class="row justify-content-center">
+    <div class="col-sm-6">
+
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4">Register</h2>
+
+          <!-- Error message -->
+          @if (errorMessage) {
+            <div class="alert alert-danger">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <!-- Success message -->
+          @if (successMessage) {
+            <div class="alert alert-success">
+              {{ successMessage }}
+            </div>
+          }
+
+          <!-- Registration form -->
+          <form [formGroup]="registerForm"
+                (ngSubmit)="onSubmit()">
+
+            <!-- Username field -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text"
+                     id="username"
+                     class="form-control"
+                     formControlName="username"
+                     [ngClass]="{ 'error': isInvalid('username') }"
+                     placeholder="Choose a username">
+            </div>
+
+            <!-- Password field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password"
+                     id="password"
+                     class="form-control"
+                     formControlName="password"
+                     [ngClass]="{ 'error': isInvalid('password') }"
+                     placeholder="Min. 6 characters">
+            </div>
+
+            <!-- Confirm password field -->
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">
+                Confirm Password
+              </label>
+              <input type="password"
+                     id="confirmPassword"
+                     class="form-control"
+                     formControlName="confirmPassword"
+                     [ngClass]="{ 'error': isInvalid('confirmPassword') }"
+                     placeholder="Re-enter your password">
+            </div>
+
+            <!-- Validation message -->
+            @if (isIncomplete()) {
+              <span class="text-danger">
+                Please complete all fields
+              </span>
+            }
+
+            <!-- Submit button -->
+            @if (!isIncomplete()) {
+              <button class="btn btn-primary w-100 mt-3"
+                      type="submit">
+                Register
+              </button>
+            }
+
+          </form>
+
+          <!-- Link to login page -->
+          <p class="text-center mt-3">
+            Already have an account?
+            <a [routerLink]="['/login']">Login here</a>
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

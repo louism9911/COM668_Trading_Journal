@@ -1,0 +1,118 @@
+<div class="container" style="margin-top: 80px; max-width: 600px">
+
+  <h2 class="mb-4">Account</h2>
+
+  <!-- Profile -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Profile</h5>
+      <p class="mb-1 text-muted small">Username</p>
+      <p class="fw-semibold fs-5 mb-0">{{ authService.getUsername() }}</p>
+    </div>
+  </div>
+
+  <!-- Change username -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Change Username</h5>
+
+      @if (usernameSuccess) {
+        <div class="alert alert-success py-2">{{ usernameSuccess }}</div>
+      }
+      @if (usernameError) {
+        <div class="alert alert-danger py-2">{{ usernameError }}</div>
+      }
+
+      <div class="mb-3">
+        <label class="form-label">New Username</label>
+        <input type="text" class="form-control"
+               [(ngModel)]="newUsername"
+               placeholder="At least 3 characters"
+               autocomplete="username">
+        @if (newUsername && newUsername.trim().length < 3) {
+          <div class="text-danger small mt-1">Must be at least 3 characters.</div>
+        }
+      </div>
+
+      <button class="btn btn-primary"
+              (click)="changeUsername()"
+              [disabled]="!canSubmitUsername || isSavingUsername">
+        @if (isSavingUsername) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+        }
+        Update Username
+      </button>
+    </div>
+  </div>
+
+  <!-- Change password -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Change Password</h5>
+
+      @if (passwordSuccess) {
+        <div class="alert alert-success py-2">{{ passwordSuccess }}</div>
+      }
+      @if (passwordError) {
+        <div class="alert alert-danger py-2">{{ passwordError }}</div>
+      }
+
+      <div class="mb-3">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-control"
+               [(ngModel)]="currentPassword"
+               autocomplete="current-password">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-control"
+               [(ngModel)]="newPassword"
+               autocomplete="new-password">
+        @if (newPassword && newPassword.length < 6) {
+          <div class="text-danger small mt-1">Must be at least 6 characters.</div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Confirm New Password</label>
+        <input type="password" class="form-control"
+               [(ngModel)]="confirmPassword"
+               [class.is-invalid]="passwordMismatch"
+               autocomplete="new-password">
+        @if (passwordMismatch) {
+          <div class="invalid-feedback">Passwords do not match.</div>
+        }
+      </div>
+
+      <button class="btn btn-primary"
+              (click)="changePassword()"
+              [disabled]="!canSubmitPassword || isSavingPassword">
+        @if (isSavingPassword) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+        }
+        Update Password
+      </button>
+    </div>
+  </div>
+
+  <!-- Delete account -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      @if (deleteError) {
+        <div class="alert alert-danger py-2">{{ deleteError }}</div>
+      }
+
+      <button class="btn btn-danger"
+              (click)="deleteAccount()"
+              [disabled]="isDeleting">
+        @if (isDeleting) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+        }
+        Delete My Account
+      </button>
+    </div>
+  </div>
+
+</div>

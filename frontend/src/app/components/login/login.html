@@ -1,0 +1,77 @@
+<div class="container" style="margin-top: 100px">
+  <div class="row justify-content-center">
+    <div class="col-sm-6">
+
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4">Login</h2>
+
+          <!-- Session expired banner -->
+          @if (sessionExpired) {
+            <div class="alert alert-warning">
+              Your session has expired. Please log in again.
+            </div>
+          }
+
+          <!-- Error message display -->
+          @if (errorMessage) {
+            <div class="alert alert-danger">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <!-- Login form with reactive form binding -->
+          <form [formGroup]="loginForm"
+                (ngSubmit)="onSubmit()">
+
+            <!-- Username field -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text"
+                     id="username"
+                     class="form-control"
+                     formControlName="username"
+                     [ngClass]="{ 'error': isInvalid('username') }"
+                     placeholder="Enter your username">
+            </div>
+
+            <!-- Password field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password"
+                     id="password"
+                     class="form-control"
+                     formControlName="password"
+                     [ngClass]="{ 'error': isInvalid('password') }"
+                     placeholder="Enter your password">
+            </div>
+
+            <!-- Validation message -->
+            @if (isIncomplete()) {
+              <span class="text-danger">
+                Please complete all fields
+              </span>
+            }
+
+            <!-- Submit button -->
+            @if (!isIncomplete()) {
+              <button class="btn btn-primary w-100 mt-3"
+                      type="submit">
+                Login
+              </button>
+            }
+
+          </form>
+
+          <!-- Link to register page -->
+          <p class="text-center mt-3">
+            Don't have an account?
+            <a [routerLink]="['/register']">Register here</a>
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

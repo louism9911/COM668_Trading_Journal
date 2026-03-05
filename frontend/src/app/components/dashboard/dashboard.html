@@ -1,0 +1,359 @@
+<div class="container" style="margin-top: 80px">
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <h2 class="mb-0">Dashboard</h2>
+
+    <!-- Date range filter (FR15) -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <label class="text-muted small mb-0">From</label>
+      <input type="date" class="form-control form-control-sm" style="width:150px"
+             [(ngModel)]="dateFrom" [max]="dateTo || ''">
+
+      <label class="text-muted small mb-0">To</label>
+      <input type="date" class="form-control form-control-sm" style="width:150px"
+             [(ngModel)]="dateTo" [min]="dateFrom || ''">
+
+      <button class="btn btn-primary btn-sm" (click)="applyDateFilter()">Apply</button>
+
+      @if (hasDateFilter) {
+        <button class="btn btn-outline-secondary btn-sm" (click)="clearDateFilter()">Clear</button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading analytics...</p>
+    </div>
+  }
+
+  <!-- No trades message -->
+  @if (!isLoading && summary.total_trades === 0) {
+    <div class="alert alert-info text-center">
+      <h4>No trades found</h4>
+      <p>Start by adding trades to see your analytics here.</p>
+    </div>
+  }
+
+  <!-- Dashboard content -->
+  @if (!isLoading && summary.total_trades > 0) {
+
+    <!-- ═══ KPI Summary Cards ═══ -->
+    <div class="row mb-4">
+
+      <div class="col-sm-4 col-md mb-3">
+        <div class="card text-center shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted">Total Trades</h6>
+            <h3 class="card-title mt-2">{{ summary.total_trades }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4 col-md mb-3">
+        <div class="card text-center shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted">Net P&L</h6>
+            <h3 class="card-title mt-2"
+                [ngClass]="getPnLClass(summary.total_profit)">
+              {{ summary.total_profit | number:'1.2-2' }}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4 col-md mb-3">
+        <div class="card text-center shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted">Win Rate</h6>
+            <h3 class="card-title mt-2">{{ summary.win_rate }}%</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profit Factor (FR12) -->
+      <div class="col-sm-4 col-md mb-3">
+        <div class="card text-center shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted">Profit Factor</h6>
+            <h3 class="card-title mt-2"
+                [ngClass]="summary.profit_factor === null ? 'text-success' :
+                            summary.profit_factor >= 1.5  ? 'text-success' :
+                            summary.profit_factor >= 1.0  ? 'text-warning' : 'text-danger'">
+              {{ formatProfitFactor(summary.profit_factor) }}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-md mb-3">
+        <div class="card text-center shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted">Wins</h6>
+            <h3 class="card-title mt-2 text-success">{{ summary.winning_trades }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-md mb-3">
+        <div class="card text-center shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted">Losses</h6>
+            <h3 class="card-title mt-2 text-danger">{{ summary.losing_trades }}</h3>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ Equity Curve ═══ -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <canvas #equityCanvas></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Symbol Chart + Win/Loss ═══ -->
+    <div class="row mb-4">
+      <div class="col-md-8 mb-3">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <canvas #symbolCanvas></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <canvas #winLossCanvas></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Buy vs Sell Breakdown ═══ -->
+    @if (byTypeData.length > 0) {
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Buy vs Sell Breakdown</h5>
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Type</th><th>Count</th><th>Total P&L</th><th>Avg P&L</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of byTypeData; track row.type) {
+                      <tr>
+                        <td>
+                          <span class="badge"
+                            [ngClass]="row.type === 'buy' ? 'bg-success' : 'bg-danger'">
+                            {{ row.type | uppercase }}
+                          </span>
+                        </td>
+                        <td>{{ row.count }}</td>
+                        <td [ngClass]="getPnLClass(row.total_profit)">{{ row.total_profit | number:'1.2-2' }}</td>
+                        <td [ngClass]="getPnLClass(row.avg_profit)">{{ row.avg_profit | number:'1.2-2' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ═══ Top 10 Trades ═══ -->
+    @if (topTrades.length > 0) {
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Top 10 Trades by Profit</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>#</th><th>Symbol</th><th>Type</th><th>Profit</th><th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (trade of topTrades; track trade.trade_id; let i = $index) {
+                      <tr>
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ trade.symbol }}</td>
+                        <td>
+                          <span class="badge"
+                            [ngClass]="trade.type === 'buy' ? 'bg-success' : 'bg-danger'">
+                            {{ trade.type | uppercase }}
+                          </span>
+                        </td>
+                        <td [ngClass]="getPnLClass(trade.profit)">{{ trade.profit | number:'1.2-2' }}</td>
+                        <td>{{ trade.open_time }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ═══ Behavioural & Strategy Section ═══ -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="card-title mb-0">Behavioural &amp; Strategy Analysis</h5>
+              @if (tagData) {
+                <span class="text-muted small">
+                  {{ tagData.tagged_trades }} / {{ tagData.total_trades }} trades tagged
+                  ({{ tagData.tag_coverage }}%)
+                </span>
+              }
+            </div>
+
+            @if (!tagData || tagData.tagged_trades === 0) {
+              <div class="text-center py-4 text-muted">
+                <p class="mb-1">No tagged trades yet.</p>
+                <p class="small">Add strategy, emotion, and entry-type tags to your trades to unlock behavioural insights.</p>
+              </div>
+            }
+
+            @if (tagData && tagData.tagged_trades > 0) {
+
+              <div class="mb-4">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                  <span>Tag coverage</span>
+                  <span>{{ tagData.tag_coverage }}%</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-primary" role="progressbar"
+                       [style.width]="tagData.tag_coverage + '%'">
+                  </div>
+                </div>
+              </div>
+
+              @if (hasTagInsights) {
+                <div class="insight-panel mb-4">
+                  <div class="insight-label">Insights</div>
+                  <ul class="mb-0 ps-3">
+                    @if (bestStrategy) {
+                      <li>
+                        Best strategy: <strong>{{ bestStrategy.strategy }}</strong>
+                        — {{ bestStrategy.win_rate }}% win rate across {{ bestStrategy.trade_count }} trades
+                        (avg P&amp;L ${{ bestStrategy.avg_profit }})
+                      </li>
+                    }
+                    @if (bestEmotion) {
+                      <li>
+                        You trade best when <strong>{{ bestEmotion.emotion }}</strong>
+                        — {{ bestEmotion.win_rate }}% win rate
+                      </li>
+                    }
+                    @if (worstEmotion) {
+                      <li class="text-danger">
+                        Avoid trading when <strong>{{ worstEmotion.emotion }}</strong>
+                        — only {{ worstEmotion.win_rate }}% win rate
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+
+              <div class="row mb-4">
+
+                @if (tagData.by_strategy?.length > 0) {
+                  <div class="col-md-6 mb-3">
+                    <h6 class="section-label">Strategy Performance</h6>
+                    <div class="table-responsive">
+                      <table class="table table-sm align-middle">
+                        <thead>
+                          <tr>
+                            <th>Strategy</th><th>Trades</th><th>Win Rate</th><th>Avg P&amp;L</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (s of tagData.by_strategy; track s.strategy) {
+                            <tr>
+                              <td>{{ s.strategy }}</td>
+                              <td>{{ s.trade_count }}</td>
+                              <td>
+                                <div class="d-flex align-items-center gap-2">
+                                  <div class="progress flex-grow-1" style="height: 6px;">
+                                    <div class="progress-bar"
+                                         [ngClass]="s.win_rate >= 50 ? 'bg-success' : 'bg-danger'"
+                                         [style.width]="s.win_rate + '%'">
+                                    </div>
+                                  </div>
+                                  <span class="small">{{ s.win_rate }}%</span>
+                                </div>
+                              </td>
+                              <td [ngClass]="getPnLClass(s.avg_profit)">${{ s.avg_profit }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                }
+
+                @if (tagData.by_emotion?.length > 0) {
+                  <div class="col-md-6 mb-3">
+                    <h6 class="section-label">Emotional State</h6>
+                    <div class="emotion-chart-wrap">
+                      <canvas #emotionCanvas></canvas>
+                    </div>
+                  </div>
+                }
+
+              </div>
+
+              @if (tagData.by_entry_type?.length > 0) {
+                <div>
+                  <h6 class="section-label mb-2">Entry Type Breakdown</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    @for (e of tagData.by_entry_type; track e.entry_type) {
+                      <div class="entry-pill">
+                        <span class="entry-pill-name">{{ e.entry_type }}</span>
+                        <span class="entry-pill-stat">{{ e.trade_count }} trades</span>
+                        <span class="entry-pill-stat"
+                              [ngClass]="e.win_rate >= 50 ? 'text-success' : 'text-danger'">
+                          {{ e.win_rate }}% WR
+                        </span>
+                        <span class="entry-pill-stat" [ngClass]="getPnLClass(e.avg_profit)">
+                          ${{ e.avg_profit }} avg
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+            }
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  }
+
+</div>
