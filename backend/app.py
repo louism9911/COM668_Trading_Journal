@@ -14,7 +14,7 @@ from blueprints.uploads.uploads import uploads_bp
 from blueprints.news.news import news_bp
 from flask_cors import CORS
 
-# ─── Logging Setup (FR19) ─────────────────────────────────────────────────────
+# ─── Logging Setup ────────────────────────────────────────────────────────────
 
 os.makedirs('logs', exist_ok=True)
 

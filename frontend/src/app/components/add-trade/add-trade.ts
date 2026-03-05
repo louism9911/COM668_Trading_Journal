@@ -78,7 +78,7 @@ export class AddTrade {
     }, { validators: closeAfterOpen });
   }
 
-  // FE15 pattern - check if field is invalid and touched
+  // Check if a form field is invalid and has been touched
   isInvalid(control: string) {
     return this.tradeForm.controls[control].invalid &&
            this.tradeForm.controls[control].touched;

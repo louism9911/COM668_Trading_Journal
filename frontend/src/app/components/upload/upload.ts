@@ -21,7 +21,6 @@ export class Upload {
   tradesImported: number = 0;
   tradesSkipped: number = 0;
 
-  // Client-side validation (FR20)
   fileError: string = '';
 
   constructor(
@@ -49,7 +48,7 @@ export class Upload {
       return;
     }
 
-    // Client-side validation: file type (NFR3, FR20)
+    // Validate file type — HTML only
     const extension = file.name.split('.').pop()?.toLowerCase();
     if (extension !== 'html' && extension !== 'htm') {
       this.fileError = 'Only HTML files (.html, .htm) are allowed. Please select a valid MetaTrader export.';

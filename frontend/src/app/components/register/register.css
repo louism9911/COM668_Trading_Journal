@@ -1,4 +1,4 @@
-/* FE15 pattern - highlight invalid fields */
+/* Highlight invalid form fields */
 .error {
   background-color: #fff0f0;
 }

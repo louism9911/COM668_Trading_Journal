@@ -47,7 +47,7 @@ export class Trade {
       return;
     }
 
-    // Get trade ID from route parameter (FE13 pattern)
+    // Get trade ID from route parameter
     this.tradeId = this.route.snapshot.paramMap.get('id') || '';
     this.loadTrade();
     this.initForms();

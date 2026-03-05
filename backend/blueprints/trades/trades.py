@@ -164,7 +164,6 @@ def update_trade(current_user, id):
     if result.matched_count == 0:
         return make_response(jsonify({'error': 'Trade not found'}), 404)
     
-    # BE03: Return 200 OK
     trade_link = f"http://localhost:5050/api/v1.0/trades/{id}"
     return make_response(jsonify({
         'url': trade_link,

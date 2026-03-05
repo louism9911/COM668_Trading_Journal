@@ -10,11 +10,7 @@ def normalize_open_time(dt_str):
     """
     Normalize a datetime string to ISO 8601 format so that
     $dateFromString in the analytics pipeline can parse it.
-
-    Handles MT4/MT5 export format: '2026.03.04 14:03:28'
-    Converts to ISO 8601              '2026-03-04T14:03:28'
-
-    Already-ISO strings are returned unchanged.
+    
     """
     if not dt_str or not dt_str.strip():
         return ''

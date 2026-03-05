@@ -1,7 +1,7 @@
 """
 News Blueprint
 ===============
-Proxies financial news requests to NewsAPI, keeping the API key server-side.
+Proxies financial news requests to NewsAPI.
 """
 
 from flask import Blueprint, request, jsonify, make_response
@@ -17,7 +17,7 @@ news_bp = Blueprint('news', __name__)
 _NEWS_API_KEY = '080190181aa644c1b48f5361460732d6'
 _NEWS_API_URL = 'https://newsapi.org/v2/everything'
 
-# Sensible defaults for financial news
+
 _DEFAULT_QUERY = 'forex trading'
 _PAGE_SIZE = 100   # NewsAPI free tier maximum
 

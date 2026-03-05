@@ -13,11 +13,6 @@ import random
 from datetime import datetime, timedelta
 import json
 
-print("=" * 70)
-print("TRADE HUB - DATABASE SETUP")
-print("=" * 70)
-print()
-
 # MongoDB Connection
 client = MongoClient("mongodb://127.0.0.1:27017")
 db = client.tradingDB
@@ -28,15 +23,12 @@ trades = db.trades
 blacklist = db.blacklist
 
 # Clear existing data
-print("Clearing existing data...")
 users.delete_many({})
 trades.delete_many({})
 blacklist.delete_many({})
-print("Collections cleared")
-print()
+
 
 # Create Users with bcrypt password hashing
-print("Creating users")
 user_data = [
     {
         "username": "kamile",
@@ -102,13 +94,8 @@ for user in user_data:
         'username': user['username'],
         'admin': user['admin']
     })
-    print(f"{user['username']} - (Admin: {user['admin']})")
-
-print()
 
 #Create Trades with sub-documents (tags)
-print("Creating trades with tags")
-print()
 
 SYMBOLS = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "XAUUSD", "BTCUSD", "USDCAD", "NZDUSD"]
 TYPES = ["buy", "sell"]
@@ -204,9 +191,6 @@ for user_info in created_users:
         trades.insert_one(trade)
         all_trades.append(trade)  # Add to collection for JSON export
     
-    print(f" {username}: {num_trades} trades created")
-
-print()
 
 # Export all trades to JSON file
 trades_for_json = []
@@ -232,21 +216,5 @@ for trade in all_trades:
 with open('trades.json', 'w') as f:
     json.dump(trades_for_json, f, indent=2)
 
-print(f"Exported {len(trades_for_json)} trades to trades.json")
-print()
 
-# Summary
-print("Summary:")
-print(f"  • Total users: {users.count_documents({})}")
-print(f"  • Total trades: {trades.count_documents({})}")
-print(f"  • Total tags: {sum(len(t.get('tags', [])) for t in trades.find())}")
-print(f"  • JSON file: trades.json ({len(trades_for_json)} trades)")
-print()
-
-print("User Accounts:")
-print("-" * 70)
-for user_info in created_users:
-    trade_count = trades.count_documents({'user_id': str(user_info['user_id'])})
-    admin_status = " (ADMIN)" if user_info['admin'] else ""
-    print(f"  {user_info['username']:<10} | password123 | {trade_count:2} trades{admin_status}")
 

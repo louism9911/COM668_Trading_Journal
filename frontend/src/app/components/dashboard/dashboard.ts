@@ -24,7 +24,7 @@ export class Dashboard implements OnInit, OnDestroy {
   byTypeData:   any[] = [];
   topTrades:    any[] = [];
 
-  // Date range filter (FR15)
+  // Date range filter
   dateFrom: string = '';
   dateTo:   string = '';
 

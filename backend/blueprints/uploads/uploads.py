@@ -3,7 +3,6 @@ Uploads Blueprint
 ==================
 Handles HTML broker statement file uploads.
 Parses MT4/MT5 HTML trade history using BeautifulSoup.
-Covers FR7, FR8, FR9, NFR3, DR4, DR7.
 """
 
 from flask import Blueprint, request, jsonify, make_response
@@ -18,7 +17,6 @@ logger = logging.getLogger('tradehub')
 # Create blueprint
 uploads_bp = Blueprint('uploads', __name__)
 
-# Allowed file extensions (NFR3)
 ALLOWED_EXTENSIONS = {'html', 'htm'}
 
 # Column header text -> internal field name.
@@ -49,7 +47,7 @@ TRADE_TYPES = {'buy', 'sell'}
 
 
 def allowed_file(filename):
-    """Check file extension is HTML (NFR3)."""
+    """Check file extension is HTML."""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -201,7 +199,7 @@ def parse_trade_row(cells, col_map):
 def upload_html(current_user):
     """
     Upload and parse an MT4/MT5 HTML trade history export.
-    The file is parsed in memory, not stored permanently (DR4).
+    The file is parsed in memory, not stored permanently.
     """
 
     # ─── Step 1: Validate file is present ────────────────
@@ -219,7 +217,7 @@ def upload_html(current_user):
             'message': 'Please select an HTML file to upload.'
         }), 400)
 
-    # ─── Step 2: Validate file extension (NFR3) ──────────
+    # ─── Step 2: Validate file extension ─────────────────
     if not allowed_file(file.filename):
         return make_response(jsonify({
             'error': 'Invalid file type',
