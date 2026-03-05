@@ -340,19 +340,8 @@ export class Dashboard implements OnInit, OnDestroy {
   renderEmotionChart() {
     if (!this.emotionCanvas || !this.tagData?.by_emotion?.length) return;
 
-    const emotionColours: Record<string, string> = {
-      confident:  'rgba(25, 135, 84, 0.75)',
-      neutral:    'rgba(108, 117, 125, 0.75)',
-      anxious:    'rgba(253, 126, 20, 0.75)',
-      fearful:    'rgba(220, 53, 69, 0.75)',
-      greedy:     'rgba(255, 193, 7, 0.75)',
-      frustrated: 'rgba(132, 32, 41, 0.75)',
-    };
-    const defaultColour = 'rgba(13, 110, 253, 0.75)';
-
     const emotions = this.tagData.by_emotion.map((e: any) => e.emotion);
     const winRates = this.tagData.by_emotion.map((e: any) => e.win_rate);
-    const colours  = emotions.map((e: string) => emotionColours[e] ?? defaultColour);
 
     const ctx = this.emotionCanvas.nativeElement.getContext('2d');
     this.emotionChart = new Chart(ctx, {
@@ -362,7 +351,7 @@ export class Dashboard implements OnInit, OnDestroy {
         datasets: [{
           label: 'Win Rate %',
           data: winRates,
-          backgroundColor: colours,
+          backgroundColor: 'rgba(13, 110, 253, 0.75)',
           borderRadius: 4,
           categoryPercentage: 0.6,
           barPercentage: 0.85,

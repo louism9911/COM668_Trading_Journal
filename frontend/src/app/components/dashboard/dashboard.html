@@ -48,7 +48,12 @@
       <div class="col-sm-4 col-md mb-3">
         <div class="card text-center shadow-sm h-100">
           <div class="card-body">
-            <h6 class="card-subtitle text-muted">Total Trades</h6>
+            <h6 class="card-subtitle text-muted d-flex align-items-center justify-content-center">
+              Total Trades
+              <span class="info-icon">i
+                <span class="info-tooltip">The total number of closed trades in your journal for the selected period.</span>
+              </span>
+            </h6>
             <h3 class="card-title mt-2">{{ summary.total_trades }}</h3>
           </div>
         </div>
@@ -57,7 +62,12 @@
       <div class="col-sm-4 col-md mb-3">
         <div class="card text-center shadow-sm h-100">
           <div class="card-body">
-            <h6 class="card-subtitle text-muted">Net P&L</h6>
+            <h6 class="card-subtitle text-muted d-flex align-items-center justify-content-center">
+              Net P&amp;L
+              <span class="info-icon">i
+                <span class="info-tooltip">Your total profit or loss across all trades. Calculated by adding up the profit/loss of every closed trade.</span>
+              </span>
+            </h6>
             <h3 class="card-title mt-2"
                 [ngClass]="getPnLClass(summary.total_profit)">
               {{ summary.total_profit | number:'1.2-2' }}
@@ -69,7 +79,12 @@
       <div class="col-sm-4 col-md mb-3">
         <div class="card text-center shadow-sm h-100">
           <div class="card-body">
-            <h6 class="card-subtitle text-muted">Win Rate</h6>
+            <h6 class="card-subtitle text-muted d-flex align-items-center justify-content-center">
+              Win Rate
+              <span class="info-icon">i
+                <span class="info-tooltip">The percentage of your trades that were profitable. Calculated as: (Winning trades ÷ Total trades) × 100.</span>
+              </span>
+            </h6>
             <h3 class="card-title mt-2">{{ summary.win_rate }}%</h3>
           </div>
         </div>
@@ -79,7 +94,12 @@
       <div class="col-sm-4 col-md mb-3">
         <div class="card text-center shadow-sm h-100">
           <div class="card-body">
-            <h6 class="card-subtitle text-muted">Profit Factor</h6>
+            <h6 class="card-subtitle text-muted d-flex align-items-center justify-content-center">
+              Profit Factor
+              <span class="info-icon">i
+                <span class="info-tooltip">How much you earn for every £1 you lose. Calculated as: Total winnings ÷ Total losses. Above 1.5 is strong; below 1.0 means you're losing overall. ∞ means no losing trades.</span>
+              </span>
+            </h6>
             <h3 class="card-title mt-2"
                 [ngClass]="summary.profit_factor === null ? 'text-success' :
                             summary.profit_factor >= 1.5  ? 'text-success' :
@@ -93,7 +113,12 @@
       <div class="col-sm-6 col-md mb-3">
         <div class="card text-center shadow-sm h-100">
           <div class="card-body">
-            <h6 class="card-subtitle text-muted">Wins</h6>
+            <h6 class="card-subtitle text-muted d-flex align-items-center justify-content-center">
+              Wins
+              <span class="info-icon">i
+                <span class="info-tooltip">The number of trades that closed with a profit greater than zero.</span>
+              </span>
+            </h6>
             <h3 class="card-title mt-2 text-success">{{ summary.winning_trades }}</h3>
           </div>
         </div>
@@ -102,7 +127,12 @@
       <div class="col-sm-6 col-md mb-3">
         <div class="card text-center shadow-sm h-100">
           <div class="card-body">
-            <h6 class="card-subtitle text-muted">Losses</h6>
+            <h6 class="card-subtitle text-muted d-flex align-items-center justify-content-center">
+              Losses
+              <span class="info-icon">i
+                <span class="info-tooltip">The number of trades that closed with a loss (profit below zero). Breakeven trades are counted in Total Trades but not here.</span>
+              </span>
+            </h6>
             <h3 class="card-title mt-2 text-danger">{{ summary.losing_trades }}</h3>
           </div>
         </div>

@@ -1,3 +1,59 @@
+/* ── Info icon tooltips ─────────────────────────────── */
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  font-size: 0.65rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  color: #6c757d;
+  border: 1.5px solid #adb5bd;
+  border-radius: 50%;
+  cursor: default;
+  position: relative;
+  vertical-align: middle;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.info-icon .info-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 210px;
+  background: #212529;
+  color: #f8f9fa;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  text-align: left;
+  white-space: normal;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.info-icon .info-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #212529;
+}
+
+.info-icon:hover .info-tooltip {
+  display: block;
+}
+
 /* Dashboard specific styles */
 .card {
   border-radius: 8px;
