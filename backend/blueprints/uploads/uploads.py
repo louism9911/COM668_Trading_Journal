@@ -24,9 +24,9 @@ ALLOWED_EXTENSIONS = {'html', 'htm'}
 # MT5 Positions ('Position', duplicate 'Time' handled separately).
 COLUMN_MAP = {
     'ticket':     'ticket',
-    'position':   'ticket',      # MT5 Positions section
-    'open time':  'open_time',   # MT4 / MT5 Orders section
-    'close time': 'close_time',  # MT4
+    'position':   'ticket',      
+    'open time':  'open_time',   
+    'close time': 'close_time',  
     'type':       'type',
     'size':       'lots',
     'volume':     'lots',
@@ -85,7 +85,7 @@ def normalize_datetime(dt_str):
     MT4/MT5 export format : '2026.03.04 14:03:28'
     ISO 8601 (no offset)  : '2026-03-04T14:03:28'
 
-    No timezone conversion is performed — times are stored in broker
+    No timezone conversion is performed times are stored in broker
     server time, exactly as exported, since the UTC offset is not
     embedded in the file and varies per broker.
     """
